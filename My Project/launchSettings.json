@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "lispkit": {
+      "commandName": "Project",
+      "commandLineArgs": "tests\\execute-01 tests\\execute-01-args"
+    }
+  }
+}
