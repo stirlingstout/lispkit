@@ -51,10 +51,13 @@ Module Parser
         ' skip white space
         Do While Not t.stream.EndOfStream
             ch = t.stream.Peek()
-            If Convert.ToChar(ch) <> " " Then
+            If Not String.IsNullOrWhiteSpace(Convert.ToChar(ch)) Then
                 Exit Do
             End If
             If Convert.ToChar(ch) = Environment.NewLine(0) Then
+                If Environment.NewLine.Length > 1 Then
+                    ch = t.stream.Read()
+                End If
                 t.line += 1
                 t.pos = 0
             End If
@@ -62,7 +65,7 @@ Module Parser
             t.pos += 1
         Loop
 
-        Debug.Assert(Not Char.IsControl(Convert.ToChar(ch)) And Convert.ToChar(ch) <> " ")
+        Debug.Assert(t.stream.EndOfStream OrElse (Not Char.IsControl(Convert.ToChar(ch)) And Convert.ToChar(ch) <> " "))
 
         Do While Not t.stream.EndOfStream
             ch = t.stream.Read()

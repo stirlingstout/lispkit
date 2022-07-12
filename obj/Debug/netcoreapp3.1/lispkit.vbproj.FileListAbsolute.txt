@@ -99,3 +99,5 @@ C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\tests\execute-27
 C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\tests\execute-27-args
 C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\tests\execute-28
 C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\tests\execute-28-args
+C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\compiler.lisp
+C:\Users\cuspc\source\repos\lispkit\bin\Debug\netcoreapp3.1\compiler.secd

@@ -22,7 +22,7 @@
                     If obj.car().isCons() Then
                         Console.Write(") ")
                     End If
-                    If obj.cdr().isNotNil() Then
+                    If obj IsNot Nothing AndAlso obj.cdr() IsNot Nothing AndAlso obj.cdr().isNotNil() Then
                         exp_print(obj.cdr())
                     End If
                 End If

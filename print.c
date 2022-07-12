@@ -38,35 +38,35 @@ int is_null(Object *obj)
      	 && (strcmp(string_value(obj), string_value(_nil)) == 0) );
 }
 
-void 
-exp_print(Object * obj)
-{
+void exp_print(Object * obj) {
   if (!obj || obj == _nil )
     return;
 
   if (gc_header(obj)->type == NUMBER) {
     printf("%ld ", obj->Number.number);
-  } else if (gc_header(obj)->type == SYMBOL) {
+  } 
+  else if (gc_header(obj)->type == SYMBOL) {
     printf("%s ", obj->Symbol.symbol);
-  } else if (gc_header(obj)->type == CONS) {
+  } 
+  else if (gc_header(obj)->type == CONS) {
     if (gc_header(car(obj))->type != CONS 
         && gc_header(cdr(obj))->type != CONS 
-        && !is_null(cdr(obj))
-	) {
+        && !is_null(cdr(obj))) {
       exp_print(car(obj));
       printf(". ");
       exp_print(cdr(obj));
-    } else {
+    } 
+    else {
       if (gc_header(car(obj))->type == CONS)
-	printf("( ");
+	    printf("( ");
       exp_print(car(obj));
       if (gc_header(car(obj))->type == CONS)
-	printf(") ");
+	    printf(") ");
 
       if (!is_null(cdr(obj))) {
      	exp_print(cdr(obj));
-      }
     }
+  }
   } else {
     printf("Unknown type: %s\n", type_str(gc_header(obj)->type));
     exit(-1);
