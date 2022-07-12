@@ -51,7 +51,7 @@ Module Parser
         ' skip white space
         Do While Not t.stream.EndOfStream
             ch = t.stream.Peek()
-            If Not String.IsNullOrWhiteSpace(Convert.ToChar(ch)) Then
+            If ch > 32 Then
                 Exit Do
             End If
             If Convert.ToChar(ch) = Environment.NewLine(0) Then
@@ -74,7 +74,7 @@ Module Parser
                 Exit Do
             End If
             next_ch = t.stream.Peek()
-            If " ().".Contains(Convert.ToChar(next_ch)) Then
+            If "().".Contains(Convert.ToChar(next_ch)) Or next_ch <= 32 Then
                 Exit Do
             End If
 
