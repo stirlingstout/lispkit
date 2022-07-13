@@ -39,7 +39,7 @@ int is_null(Object *obj)
 }
 
 void exp_print(Object * obj) {
-  if (!obj || obj == _nil )
+  if (!obj || obj == _nil ) /* obj == 0 or obj == _nil */
     return;
 
   if (gc_header(obj)->type == NUMBER) {

@@ -158,8 +158,8 @@ Example: lispkit compiler.ascii compiler.txt.ascii"
 
         Init()
 
-
         Dim fn = get_exp(streams(0))
+        exp_print(fn)
         Dim arguments = get_exp_list(streams(1))
         Dim result = execute(fn, arguments)
 

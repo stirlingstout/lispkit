@@ -163,10 +163,10 @@ Module Parser
             Case TokenType.T_RIGHTPAREN
             Case TokenType.T_DOT
                 match(TokenType.T_DOT)
-                cell.Cons.cdr = s_exp()
+                cell.cons.cdr = s_exp()
             Case TokenType.T_END
             Case Else
-                cell.Cons.cdr = s_exp_list()
+                cell.cons.cdr = s_exp_list()
         End Select
         Return cell
     End Function
