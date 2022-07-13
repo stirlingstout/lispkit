@@ -1,4 +1,5 @@
 Imports System
+Imports System.Text
 Imports Microsoft.VisualBasic
 
 ' Based on:
@@ -113,18 +114,38 @@ Module Program
                     Return "Unknown"
             End Select
         End Function
+
+        Public Overrides Function ToString() As String
+            Dim result As New StringBuilder()
+            If Me IsNot Nothing Then
+                If Me.isSymbol() Then
+                    result.Append($"{Me.symbol} ")
+                ElseIf Me.isNumber() Then
+                    result.Append($"{Me.number} ")
+                Else
+                    Debug.Assert(Me.isCons(), $"Unknown type: {Me.typeString()}")
+
+                    result.Append("( ")
+                    Dim p = Me
+                    Do While p.isCons()
+                        result.Append(p.car().ToString())
+                        p = p.cdr()
+                    Loop
+                    If p.isSymbol() AndAlso p.symbol = "NIL" Then
+                    Else
+                        result.Append(". ")
+                        result.Append(p.ToString())
+                    End If
+                    result.Append(") ")
+                End If
+            Else
+                Debug.Fail("Trying to print Nothing")
+            End If
+            Return result.ToString()
+        End Function
+
     End Class
 
-    Dim _stack As LK_Object
-    Dim _environ As LK_Object
-    Dim _control As LK_Object
-    Dim _dump As LK_Object
-
-    Dim _true As LK_Object
-    Dim _false As LK_Object
-    Public _nil As LK_Object
-
-    Dim _work As LK_Object
 
     Sub Main(args As String())
         Dim help = $"Lispkit ({Date.Now})
@@ -156,7 +177,7 @@ Example: lispkit compiler.ascii compiler.txt.ascii"
             End Try
         Next
 
-        Init()
+        SECD.init()
 
         Dim fn = get_exp(streams(0))
         exp_print(fn)
@@ -178,21 +199,6 @@ Example: lispkit compiler.ascii compiler.txt.ascii"
 
         intern_free()
 
-    End Sub
-
-    Sub Init()
-        gc_init()
-
-        _true = New LK_Object("T")
-        _false = New LK_Object("F")
-        _nil = New LK_Object("NIL")
-
-        _stack = _nil
-        _control = _nil
-        _environ = _nil
-        _dump = _nil
-
-        _work = _nil
     End Sub
 
 #Region "Garbage collection routines"

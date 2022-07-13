@@ -7,7 +7,7 @@
 
     Dim _true As LK_Object
     Dim _false As LK_Object
-    Dim _nil As LK_Object
+    Public _nil As LK_Object
 
     Dim _work As LK_Object
 
@@ -37,6 +37,57 @@
                                AddressOf _rem,
                                AddressOf _leq,
                                AddressOf _stop}
+
+    Function disassemble(program As LK_Object) As String
+        ' Returns a string representation of the instruction at the head of the program
+        Debug.Assert(program.car().isNumber(), $"Not an opcode")
+        Select Case program.car().number
+            Case 1
+                Return $"ld {program.cdr().car().ToString()}"
+            Case 2
+                Return $"ldc {program.cdr().car().ToString()}"
+            Case 3
+                Return "ldf"
+            Case 4
+                Return "ap"
+            Case 5
+                Return "rtn"
+            Case 6
+                Return "dum"
+            Case 7
+                Return "rap"
+            Case 8
+                Return "sel"
+            Case 9
+                Return "join"
+            Case 10
+                Return "car"
+            Case 11
+                Return "cdr"
+            Case 12
+                Return "atom"
+            Case 13
+                Return "cons"
+            Case 14
+                Return "eq"
+            Case 15
+                Return "add"
+            Case 16
+                Return "sub"
+            Case 17
+                Return "mul"
+            Case 18
+                Return "div"
+            Case 19
+                Return "rem"
+            Case 20
+                Return "leq"
+            Case 21
+                Return "stop"
+            Case Else
+                Return $"Invalid opcode {program.car().number}"
+        End Select
+    End Function
 
     Sub init()
         gc_init()
@@ -72,7 +123,7 @@
         _work = _work.car()
         _stack = New LK_Object(_work, _stack)
         _control = _control.cdr().cdr()
-        _work = Nothing
+        _work = _nil
     End Sub
 
     Sub pushBoolean(b As Boolean)
@@ -170,7 +221,7 @@
         _dump = New LK_Object(_environ.cdr(), _dump)
         _dump = New LK_Object(_stack.cdr().cdr(), _dump)
         _environ = _stack.car().cdr()
-        _environ.cons.car = _stack.car().cdr()
+        _environ.cons.car = _stack.cdr().car()
         _control = _stack.car().car()
         _stack = _nil
     End Sub
@@ -211,6 +262,10 @@
 
         stopped = 0
         Do
+            Debug.Assert(_control.isCons() AndAlso _control.car().isNumber())
+            If _control.car().isNumber() Then
+                Console.WriteLine($"Executing {_control.car().number}=>{disassemble(_control)}")
+            End If
             op_code(numberValue(_control.car()))()
         Loop Until stopped > 0
 
