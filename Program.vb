@@ -27,6 +27,9 @@ Imports Microsoft.VisualBasic
 ' SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Module Program
+
+    Public isVerbose = False
+
     Enum ObjectType
         NUMBER = 1
         SYMBOL = 2
@@ -148,12 +151,19 @@ Module Program
 
 
     Sub Main(args As String())
+        Dim firstRealArgument = Function() As Integer
+                                    Dim r = 0
+                                    Do While r < args.Length And args(r).StartsWith("-")
+                                        r += 1
+                                    Loop
+                                    Return r
+                                End Function
+
         Dim help = $"Lispkit ({Date.Now})
 Usage: lispkit [option] [file] [file]
 Example: lispkit compiler.ascii compiler.txt.ascii"
 
-        Dim isVerbose = False
-        If args.Length < 2 Then
+        If args.Length - firstRealArgument() < 2 Then
             Console.WriteLine(help)
             End
         End If
@@ -168,9 +178,9 @@ Example: lispkit compiler.ascii compiler.txt.ascii"
 
         Dim streams() As System.IO.TextReader = {Console.In, Console.In} ' fp in original
 
-        For i = 0 To Math.Min(args.Length - 1, streams.Length - 1)
+        For i = firstRealArgument() To Math.Min(args.Length - 1, firstRealArgument() + streams.Length - 1)
             Try
-                streams(i) = New System.IO.StreamReader(args(i))
+                streams(i - firstRealArgument()) = New System.IO.StreamReader(args(i))
             Catch ex As Exception
                 Console.WriteLine($"Could not load {args(i)}: {ex.Message}")
                 End
@@ -180,11 +190,17 @@ Example: lispkit compiler.ascii compiler.txt.ascii"
         SECD.init()
 
         Dim fn = get_exp(streams(0))
-        exp_print(fn)
+        If isVerbose Then
+            exp_print(fn)
+        End If
         Dim arguments = get_exp_list(streams(1))
+        If isVerbose Then
+            exp_print(arguments)
+        End If
         Dim result = execute(fn, arguments)
 
         exp_print(result)
+
         Console.WriteLine()
 
         For Each s In streams

@@ -2,7 +2,7 @@
   "profiles": {
     "lispkit": {
       "commandName": "Project",
-      "commandLineArgs": "compiler.secd  compiler.lisp"
+      "commandLineArgs": "-h -v compiler.secd  compiler.lisp"
     }
   }
 }

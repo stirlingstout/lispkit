@@ -1,9 +1,9 @@
 ﻿Module SECD
 
-    Dim _stack As LK_Object
-    Dim _environ As LK_Object
-    Dim _control As LK_Object
-    Dim _dump As LK_Object
+    Dim s As LK_Object ' stack
+    Dim e As LK_Object ' environment
+    Dim c As LK_Object 'control
+    Dim d As LK_Object ' dump
 
     Dim _true As LK_Object
     Dim _false As LK_Object
@@ -47,43 +47,43 @@
             Case 2
                 Return $"ldc {program.cdr().car().ToString()}"
             Case 3
-                Return "ldf"
+                Return $"ldf {program.car()}"
             Case 4
-                Return "ap"
+                Return $"ap"
             Case 5
-                Return "rtn"
+                Return $"rtn"
             Case 6
-                Return "dum"
+                Return $"dum"
             Case 7
-                Return "rap"
+                Return $"rap"
             Case 8
-                Return "sel"
+                Return $"sel"
             Case 9
                 Return "join"
             Case 10
-                Return "car"
+                Return $"car"
             Case 11
-                Return "cdr"
+                Return $"cdr"
             Case 12
-                Return "atom"
+                Return $"atom"
             Case 13
-                Return "cons"
+                Return $"cons"
             Case 14
-                Return "eq"
+                Return $"eq"
             Case 15
-                Return "add"
+                Return $"add"
             Case 16
-                Return "sub"
+                Return $"sub"
             Case 17
-                Return "mul"
+                Return $"mul"
             Case 18
-                Return "div"
+                Return $"div"
             Case 19
-                Return "rem"
+                Return $"rem"
             Case 20
-                Return "leq"
+                Return $"leq"
             Case 21
-                Return "stop"
+                Return $"stop"
             Case Else
                 Return $"Invalid opcode {program.car().number}"
         End Select
@@ -96,158 +96,158 @@
         _false = New LK_Object("F")
         _nil = New LK_Object("NIL")
 
-        _stack = _nil
-        _control = _nil
-        _environ = _nil
-        _dump = _nil
+        s = _nil
+        c = _nil
+        e = _nil
+        d = _nil
 
         _work = _nil
     End Sub
 
     Sub _ldc()
-        _stack = New LK_Object(_control.cdr().car(), _stack)
-        _control = _control.cdr().cdr()
+        s = New LK_Object(c.cdr().car(), s)
+        c = c.cdr().cdr()
     End Sub
 
     Sub _ld()
         Dim i = 0
-        _work = _environ
+        _work = e
 
-        For i = 1 To numberValue(_control.cdr().car().car())
+        For i = 1 To numberValue(c.cdr().car().car())
             _work = _work.cdr()
         Next
         _work = _work.car()
-        For i = 1 To numberValue(_control.cdr().car().cdr())
+        For i = 1 To numberValue(c.cdr().car().cdr())
             _work = _work.cdr
         Next
         _work = _work.car()
-        _stack = New LK_Object(_work, _stack)
-        _control = _control.cdr().cdr()
+        s = New LK_Object(_work, s)
+        c = c.cdr().cdr()
         _work = _nil
     End Sub
 
     Sub pushBoolean(b As Boolean)
         If b Then
-            _stack = New LK_Object(_true, _stack.cdr())
+            s = New LK_Object(_true, s.cdr())
         Else
-            _stack = New LK_Object(_false, _stack.cdr())
+            s = New LK_Object(_false, s.cdr())
         End If
     End Sub
 
     Sub nextInstruction()
-        _control = _control.cdr()
+        c = c.cdr()
     End Sub
 
     Sub _car()
-        _stack = New LK_Object(_stack.car().car(), _stack.cdr())
+        s = New LK_Object(s.car().car(), s.cdr())
         nextInstruction()
     End Sub
 
     Sub _cdr()
-        _stack = New LK_Object(_stack.car().cdr(), _stack.cdr())
+        s = New LK_Object(s.car().cdr(), s.cdr())
         nextInstruction()
     End Sub
 
     Sub _atom()
-        pushBoolean(_stack.car().isNumber() OrElse _stack.car().isSymbol())
+        pushBoolean(s.car().isNumber() OrElse s.car().isSymbol())
         nextInstruction()
     End Sub
 
     Sub _cons()
-        _stack = New LK_Object(New LK_Object(_stack.car(), _stack.cdr().car()), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(s.car(), s.cdr().car()), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _sub()
-        _stack = New LK_Object(New LK_Object(numberValue(_stack.cdr().car()) - numberValue(_stack.car())), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(numberValue(s.cdr().car()) - numberValue(s.car())), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _add()
-        _stack = New LK_Object(New LK_Object(numberValue(_stack.cdr().car()) + numberValue(_stack.car())), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(numberValue(s.cdr().car()) + numberValue(s.car())), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _mul()
-        _stack = New LK_Object(New LK_Object(numberValue(_stack.cdr().car()) * numberValue(_stack.car())), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(numberValue(s.cdr().car()) * numberValue(s.car())), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _div()
-        _stack = New LK_Object(New LK_Object(numberValue(_stack.cdr().car()) \ numberValue(_stack.car())), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(numberValue(s.cdr().car()) \ numberValue(s.car())), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _rem()
-        _stack = New LK_Object(New LK_Object(numberValue(_stack.cdr().car()) Mod numberValue(_stack.car())), _stack.cdr().cdr())
+        s = New LK_Object(New LK_Object(numberValue(s.cdr().car()) Mod numberValue(s.car())), s.cdr().cdr())
         nextInstruction()
     End Sub
 
     Sub _leq()
-        pushBoolean(numberValue(_stack.cdr().car()) <= numberValue(_stack.car()))
+        pushBoolean(numberValue(s.cdr().car()) <= numberValue(s.car()))
         nextInstruction()
     End Sub
 
     Sub _eq()
-        If _stack.car().isSymbol() AndAlso _stack.cdr().car().isSymbol() Then
-            pushBoolean(stringValue(_stack.car) = stringValue(_stack.cdr().car()))
-        ElseIf _stack.car().isNumber() AndAlso _stack.cdr().car().isNumber() Then
-            pushBoolean((numberValue(_stack.car) = numberValue(_stack.cdr().car())))
+        If s.car().isSymbol() AndAlso s.cdr().car().isSymbol() Then
+            pushBoolean(stringValue(s.car) = stringValue(s.cdr().car()))
+        ElseIf s.car().isNumber() AndAlso s.cdr().car().isNumber() Then
+            pushBoolean((numberValue(s.car) = numberValue(s.cdr().car())))
         End If
         nextInstruction()
     End Sub
 
     Sub _ldf()
-        _work = New LK_Object(_control.cdr().car(), _environ)
-        _stack = New LK_Object(_work, _stack)
-        _control = _control.cdr().cdr()
+        _work = New LK_Object(c.cdr().car(), e)
+        s = New LK_Object(_work, s)
+        c = c.cdr().cdr()
         _work = _nil
     End Sub
 
     Sub _rtn()
-        _stack = New LK_Object(_stack.car(), _dump.car())
-        _environ = _dump.cdr().car()
-        _control = _dump.cdr().cdr().car()
-        _dump = _dump.cdr().cdr().cdr()
+        s = New LK_Object(s.car(), d.car())
+        e = d.cdr().car()
+        c = d.cdr().cdr().car()
+        d = d.cdr().cdr().cdr()
     End Sub
 
     Sub _dum()
-        _environ = New LK_Object(_nil, _environ)
+        e = New LK_Object(_nil, e)
         nextInstruction()
     End Sub
 
     Sub _rap()
-        _dump = New LK_Object(_control.cdr(), _dump)
-        _dump = New LK_Object(_environ.cdr(), _dump)
-        _dump = New LK_Object(_stack.cdr().cdr(), _dump)
-        _environ = _stack.car().cdr()
-        _environ.cons.car = _stack.cdr().car()
-        _control = _stack.car().car()
-        _stack = _nil
+        d = New LK_Object(c.cdr(), d)
+        d = New LK_Object(e.cdr(), d)
+        d = New LK_Object(s.cdr().cdr(), d)
+        e = s.car().cdr()
+        e.cons.car = s.cdr().car()
+        c = s.car().car()
+        s = _nil
     End Sub
 
     Sub _sel()
-        _dump = New LK_Object(_control.cdr().cdr().cdr(), _dump)
-        If stringValue(_stack.car()) = stringValue(_true) Then
-            _control = _control.cdr().car()
+        d = New LK_Object(c.cdr().cdr().cdr(), d)
+        If stringValue(s.car()) = stringValue(_true) Then
+            c = c.cdr().car()
         Else
-            _control = _control.cdr().cdr().car()
+            c = c.cdr().cdr().car()
         End If
-        _stack = _stack.cdr()
+        s = s.cdr()
     End Sub
 
     Sub _join()
-        _control = _dump.car()
-        _dump = _dump.cdr()
+        c = d.car()
+        d = d.cdr()
     End Sub
 
     Sub _ap()
-        _dump = New LK_Object(_control.cdr(), _dump)
-        _dump = New LK_Object(_environ, _dump)
-        _dump = New LK_Object(_stack.cdr().cdr(), _dump)
-        _environ = New LK_Object(_stack.cdr().car(), _stack.car().cdr())
-        _control = _stack.car().car()
-        _stack = _nil
+        d = New LK_Object(c.cdr(), d)
+        d = New LK_Object(e, d)
+        d = New LK_Object(s.cdr().cdr(), d)
+        e = New LK_Object(s.cdr().car(), s.car().cdr())
+        c = s.car().car()
+        s = _nil
     End Sub
 
     Sub _stop()
@@ -255,21 +255,23 @@
     End Sub
 
     Function execute(fn As LK_Object, arguments As LK_Object) As LK_Object
-        _stack = New LK_Object(arguments, _nil)
-        _environ = _nil
-        _control = fn
-        _dump = _nil
+        s = New LK_Object(arguments, _nil)
+        e = _nil
+        c = fn
+        d = _nil
 
         stopped = 0
+        Dim pc = 0
         Do
-            Debug.Assert(_control.isCons() AndAlso _control.car().isNumber())
-            If _control.car().isNumber() Then
-                Console.WriteLine($"Executing {_control.car().number}=>{disassemble(_control)}")
+            Debug.Assert(c.isCons() AndAlso c.car().isNumber())
+            If isVerbose Then
+                Console.WriteLine($"Executing {pc}: {disassemble(c)}")
             End If
-            op_code(numberValue(_control.car()))()
+            op_code(numberValue(c.car()))()
+            pc += 1
         Loop Until stopped > 0
 
-        Return _stack
+        Return s.car()
     End Function
 End Module
 
